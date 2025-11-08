@@ -320,7 +320,7 @@ function getPositionFromWaypointsAtPhase_noOrientation(waypoints, phase){
 }
 
 function getPositionFromWaypointsAtPhase_laggingSmoothing(waypoints, phase){
-    lag = 0.1
+    lag = 0.15
     currentPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, phase);
     previousPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, Math.max(0, phase - lag));
     angle = Math.atan2(currentPosition.y - previousPosition.y, currentPosition.x - previousPosition.x) + Math.PI / 2;
