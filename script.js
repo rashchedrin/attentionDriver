@@ -21,9 +21,11 @@ const context = canvas.getContext('2d');
  * Draws the canvas content.
  * Fills the entire canvas with gray color.
  * 
+ * @param {number|null} phaseOverride - Optional phase value (0.0 to 1.0) to override time-based calculation.
+ * 
  * side-effects: Modifies the canvas rendering context.
  */
-function draw() {
+function draw(phaseOverride = null) {
     // background
     context.fillStyle = '#000000';
     context.fillRect(0, 0, canvas.width, canvas.height);
@@ -54,6 +56,7 @@ function draw() {
         sidewalkColor,
         axisLineColor,
         loopDurationSeconds,
+        phaseOverride,
     );
 }
 
@@ -68,7 +71,9 @@ function drawCity(
     houseColor,
     streetColor,
     sidewalkColor,
-    axisLineColor
+    axisLineColor,
+    loopDurationSeconds,
+    phaseOverride = null
 ) {
     streetRounding = sidewalkWidth
     blockWidth = houseWidth + sidewalkWidth * 2
@@ -76,8 +81,12 @@ function drawCity(
     cellWidth = blockWidth + streetWidth
     cellHeight = blockHeight + streetWidth
 
-    currentTime = Date.now() / 1000;
-    animationPhase = (currentTime % loopDurationSeconds) / loopDurationSeconds;
+    if (phaseOverride !== null) {
+        animationPhase = phaseOverride;
+    } else {
+        currentTime = Date.now() / 1000;
+        animationPhase = (currentTime % loopDurationSeconds) / loopDurationSeconds;
+    }
     for (let row = 0; row < rows; row++) {
         for (let column = 0; column < columns; column++) {
             cellStartX = column * cellWidth
@@ -229,7 +238,7 @@ function drawCity(
                 [verticalLeftStreetMiddle, cellStartY + cellHeight / 2],
                 [verticalLeftStreetMiddle, cellEndY - streetWidth / 2],
                 [cellEndX - streetWidth / 4 - sidewalkWidth, horizontalTopStreetMiddle + cellHeight],
-                [carLeftX, horizontalTopStreetMiddle + cellHeight],
+                [cellStartX + cellWidth / 2, horizontalTopStreetMiddle + cellHeight],
             ], animationPhase);
             carX = wrapCellX(carPosition.x);
             carY = wrapCellY(carPosition.y);
@@ -775,6 +784,138 @@ function drawRoundedRectangle(x0, y0, x1, y1, radius, edgeColor, fillColor) {
         context.lineWidth = 1;
         context.stroke();
     }
+}
+
+/**
+ * Generates and downloads a GIF of one full animation cycle.
+ * 
+ * side-effects: Creates a GIF file and triggers download.
+ */
+function downloadGIF() {
+    const GIF_FPS = 24;
+    const LOOP_DURATION_SECONDS = 4;
+    const TOTAL_FRAMES = GIF_FPS * LOOP_DURATION_SECONDS;
+    
+    const gifEncoder = new GIF({
+        workers: 2,
+        quality: 10,
+        width: CANVAS_WIDTH,
+        height: CANVAS_HEIGHT,
+        repeat: 0,
+        workerScript: 'gif.worker.js'
+    });
+    
+    let frameCount = 0;
+    
+    function captureFrame() {
+        const phase = frameCount / TOTAL_FRAMES;
+        draw((phase+0.001) % 1);
+        
+        gifEncoder.addFrame(context, { delay: 1000 / GIF_FPS, copy: true });
+        
+        frameCount++;
+        
+        if (frameCount < TOTAL_FRAMES) {
+            setTimeout(captureFrame, 0);
+        } else {
+            gifEncoder.on('finished', function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'attention-driver-animation.gif';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                const button = document.getElementById('downloadGifButton');
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Download GIF';
+                }
+            });
+            
+            gifEncoder.on('progress', function(p) {
+                const button = document.getElementById('downloadGifButton');
+                if (button) {
+                    button.textContent = 'Generating GIF... ' + Math.round(p * 100) + '%';
+                }
+            });
+            
+            gifEncoder.render();
+        }
+    }
+    
+    captureFrame();
+}
+
+/**
+ * Generates and downloads an APNG of one full animation cycle.
+ * 
+ * side-effects: Creates an APNG file and triggers download.
+ */
+function downloadAPNG() {
+    const APNG_FPS = 24;
+    const LOOP_DURATION_SECONDS = 4;
+    const TOTAL_FRAMES = APNG_FPS * LOOP_DURATION_SECONDS;
+    const FRAME_DELAY_MS = 1000 / APNG_FPS;
+    
+    const frames = [];
+    const delays = [];
+    let frameCount = 0;
+    
+    const button = document.getElementById('downloadApngButton');
+    
+    function captureFrame() {
+        const phase = frameCount / TOTAL_FRAMES;
+        draw((phase + 0.001) % 1);
+        
+        const imageData = context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        frames.push(imageData.data.buffer);
+        delays.push(FRAME_DELAY_MS);
+        
+        frameCount++;
+        
+        if (button) {
+            button.textContent = 'Generating APNG... ' + Math.round((frameCount / TOTAL_FRAMES) * 100) + '%';
+        }
+        
+        if (frameCount < TOTAL_FRAMES) {
+            setTimeout(captureFrame, 0);
+        } else {
+            generateAPNG();
+        }
+    }
+    
+    function generateAPNG() {
+        if (button) {
+            button.textContent = 'Encoding APNG...';
+        }
+        
+        const apngData = UPNG.encode(frames, CANVAS_WIDTH, CANVAS_HEIGHT, 0, delays);
+        const blob = new Blob([apngData], { type: 'image/png' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'attention-driver-animation.apng';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        if (button) {
+            button.disabled = false;
+            button.textContent = 'Download APNG';
+        }
+    }
+    
+    if (button) {
+        button.disabled = true;
+        button.textContent = 'Generating APNG...';
+    }
+    
+    captureFrame();
 }
 
 // Call draw() at the specified frame rate (every 1000/FRAME_RATE ms)
