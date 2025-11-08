@@ -22,8 +22,8 @@ function draw() {
     // background
     context.fillStyle = '#000000';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    rows = 3;
-    cols = 4;
+    rows = 5;
+    cols = 5;
     gridCellWidth = CANVAS_WIDTH / cols;
     gridCellHeight = CANVAS_HEIGHT / rows;
     houseRounding = 10;
@@ -156,18 +156,20 @@ function drawCity(
             carWidth = streetWidth  / 3;
             carHeight = carWidth * 2;
             carColor = 'green'
+            wrapCellX = (x) => (x + cellWidth) % cellWidth + cellStartX;
+            wrapCellY = (y) => (y + cellHeight) % cellHeight + cellStartY;
             //green goes up
             verticalStreetMiddle = cellStartX + streetWidth / 4
             verticalLeftStreetMiddle = cellEndX - streetWidth / 4
             horizontalStreetMiddle = cellStartY + streetWidth / 4
-            horizontalTopStreetMiddle = cellEndY - streetWidth / 4
+            horizontalTopStreetMiddle = cellEndY - streetWidth / 4 - cellHeight
 
             carPosition = getPositionFromWaypointsAtPhase([
                 [verticalStreetMiddle, cellStartY + cellHeight / 2],
                 [verticalStreetMiddle, cellStartY - cellHeight / 2],
             ], animationPhase);
-            carUpX = (carPosition.x + CANVAS_WIDTH) % CANVAS_WIDTH;
-            carUpY = (carPosition.y + CANVAS_HEIGHT) % CANVAS_HEIGHT;
+            carUpX = wrapCellX(carPosition.x);
+            carUpY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carUpX, carUpY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
@@ -176,8 +178,8 @@ function drawCity(
                 [verticalLeftStreetMiddle, cellStartY - cellHeight / 2],
                 [verticalLeftStreetMiddle, cellStartY + cellHeight / 2],
             ], animationPhase);
-            carDownX = (carPosition.x + CANVAS_WIDTH) % CANVAS_WIDTH;
-            carDownY = (carPosition.y + CANVAS_HEIGHT) % CANVAS_HEIGHT;
+            carDownX = wrapCellX(carPosition.x);
+            carDownY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carDownX, carDownY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
@@ -187,8 +189,8 @@ function drawCity(
                 [cellStartX - cellWidth / 2, horizontalStreetMiddle],
                 [cellStartX + cellWidth / 2, horizontalStreetMiddle],
             ], animationPhase);
-            carRightX = (carPosition.x + CANVAS_WIDTH) % CANVAS_WIDTH;
-            carRightY = (carPosition.y + CANVAS_HEIGHT) % CANVAS_HEIGHT;
+            carRightX = wrapCellX(carPosition.x);
+            carRightY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carRightX, carRightY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
@@ -198,24 +200,78 @@ function drawCity(
                 [cellStartX + cellWidth / 2, horizontalTopStreetMiddle],
                 [cellStartX - cellWidth / 2, horizontalTopStreetMiddle],
             ], animationPhase);
-            carLeftX = (carPosition.x + CANVAS_WIDTH) % CANVAS_WIDTH;
-            carLeftY = (carPosition.y + CANVAS_HEIGHT) % CANVAS_HEIGHT;
+            carLeftX = wrapCellX(carPosition.x);
+            carLeftY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carLeftX, carLeftY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
             //green goes up then right
             verticalStreetMiddle = cellStartX + streetWidth / 4
             carPosition = getPositionFromWaypointsAtPhase([
-                [carUpX, carUpY],
+                [verticalStreetMiddle, cellStartY + cellHeight / 2],
                 [verticalStreetMiddle, cellStartY + streetWidth / 2],
                 [cellStartX + streetWidth / 4 + sidewalkWidth, horizontalStreetMiddle],
-                [carRightX, carRightY],
+                [cellStartX + cellWidth / 2, horizontalStreetMiddle],
             ], animationPhase);
-            carX = (carPosition.x + CANVAS_WIDTH) % CANVAS_WIDTH;
-            carY = (carPosition.y + CANVAS_HEIGHT) % CANVAS_HEIGHT;
+            carX = wrapCellX(carPosition.x);
+            carY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
-            
+
+            //green goes down then left
+            verticalStreetMiddle = cellStartX + streetWidth / 4
+            carPosition = getPositionFromWaypointsAtPhase([
+                [verticalLeftStreetMiddle, cellStartY + cellHeight / 2],
+                [verticalLeftStreetMiddle, cellEndY - streetWidth / 2],
+                [cellEndX - streetWidth / 4 - sidewalkWidth, horizontalTopStreetMiddle + cellHeight],
+                [carLeftX, horizontalTopStreetMiddle + cellHeight],
+            ], animationPhase);
+            carX = wrapCellX(carPosition.x);
+            carY = wrapCellY(carPosition.y);
+            carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
+            drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+
+            //green goes left then up
+            verticalStreetMiddle = cellStartX + streetWidth / 4
+            carPosition = getPositionFromWaypointsAtPhase([
+                [cellStartX + cellWidth/2, horizontalTopStreetMiddle + cellHeight],
+                [houseStartX - carHeight/2, horizontalTopStreetMiddle + cellHeight],
+                [verticalStreetMiddle, houseEndY],
+                [verticalStreetMiddle, cellStartY + cellHeight/2],
+            ], animationPhase);
+            carX = wrapCellX(carPosition.x);
+            carY = wrapCellY(carPosition.y);
+            carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
+            drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+
+            //green goes right then down
+            carPosition = getPositionFromWaypointsAtPhase([
+                [cellStartX + cellWidth / 2, horizontalStreetMiddle],
+                [houseEndX, horizontalStreetMiddle],
+                [verticalLeftStreetMiddle, houseStartY],
+                [verticalLeftStreetMiddle, cellStartY + cellHeight / 2],
+            ], animationPhase);
+            carX = wrapCellX(carPosition.x);
+            carY = wrapCellY(carPosition.y);
+            carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
+            drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+
+            //green goes up then left
+            allowLeftTurn = false;
+            if(allowLeftTurn){
+                verticalStreetMiddle = cellStartX + streetWidth / 4
+                carPosition = getPositionFromWaypointsAtPhase([
+                    [carUpX, carUpY],
+                    // [verticalStreetMiddle, cellStartY + streetWidth],
+                    [cellStartX, cellStartY],
+                    // [cellStartX - streetWidth / 4 - sidewalkWidth, horizontalStreetMiddle],
+                    [carLeftX - cellWidth, carLeftY - cellHeight],
+                ], animationPhase);
+                carX = wrapCellX(carPosition.x);
+                carY = wrapCellY(carPosition.y);
+                carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
+                drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            }
 
 
             // //horizontal goes right
@@ -242,8 +298,41 @@ class Position2D {
         this.orientationRadiansCCW = orientationRadiansCCW;
     }
 }
+function getPositionFromWaypointsAtPhase_noOrientation(waypoints, phase){
+    if(waypoints.length === 1){
+        return new Position2D(waypoints[0][0], waypoints[0][1], 0);
+    }
+    nSegments = waypoints.length - 1;
+    segmentDuration = 1 / nSegments;    
+    segmentIndex = Math.floor(phase / segmentDuration);
+    // Clamp segmentIndex to valid range
+    segmentIndex = Math.min(segmentIndex, nSegments - 1);
+    segmentProgress = (phase % segmentDuration) / segmentDuration;
+    previousWaypoint = waypoints[segmentIndex];
+    nextWaypoint = waypoints[segmentIndex + 1];
+    
+    position = new Position2D(
+        previousWaypoint[0] + (nextWaypoint[0] - previousWaypoint[0]) * segmentProgress,
+        previousWaypoint[1] + (nextWaypoint[1] - previousWaypoint[1]) * segmentProgress,
+        0,
+    );
+    return position;
+}
 
-function getPositionFromWaypointsAtPhase(waypoints, phase){
+function getPositionFromWaypointsAtPhase_laggingSmoothing(waypoints, phase){
+    lag = 0.1
+    currentPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, phase);
+    previousPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, Math.max(0, phase - lag));
+    angle = Math.atan2(currentPosition.y - previousPosition.y, currentPosition.x - previousPosition.x) + Math.PI / 2;
+    position = new Position2D(
+        currentPosition.x,
+        currentPosition.y,
+        angle,
+    );
+    return position;
+}
+
+function getPositionFromWaypointsAtPhase_vectorInterpolation(waypoints, phase){
     if(waypoints.length === 1){
         return new Position2D(waypoints[0][0], waypoints[0][1], 0);
     }
@@ -254,30 +343,96 @@ function getPositionFromWaypointsAtPhase(waypoints, phase){
     previousWaypoint = waypoints[segmentIndex];
     nextWaypoint = waypoints[segmentIndex + 1];
     
-    // Calculate orientation, handling zero-length segments
-    let orientation = 0;
+    // Calculate orientation unit vectors for different segments
+    let previousSegmentVector = null;
+    let currentSegmentVector = null;
+    let nextSegmentVector = null;
+    
+    // Previous segment orientation vector
+    if (segmentIndex > 0) {
+        let prevPrevWaypoint = waypoints[segmentIndex - 1];
+        let dx = previousWaypoint[0] - prevPrevWaypoint[0];
+        let dy = previousWaypoint[1] - prevPrevWaypoint[1];
+        if (dx !== 0 || dy !== 0) {
+            let length = Math.sqrt(dx * dx + dy * dy);
+            // Convert to perpendicular unit vector (rotate 90 degrees CCW)
+            previousSegmentVector = { x: -dy / length, y: dx / length };
+        }
+    }
+    
+    // Current segment orientation vector
     let dx = nextWaypoint[0] - previousWaypoint[0];
     let dy = nextWaypoint[1] - previousWaypoint[1];
-    
-    if (dx === 0 && dy === 0) {
-        // Current segment has zero length, look for orientation from other segments
-        // First try previous segment
-        if (segmentIndex > 0) {
-            let prevPrevWaypoint = waypoints[segmentIndex - 1];
-            dx = previousWaypoint[0] - prevPrevWaypoint[0];
-            dy = previousWaypoint[1] - prevPrevWaypoint[1];
-        }
-        // If still zero or no previous segment, try next segment
-        if ((dx === 0 && dy === 0) && segmentIndex < nSegments - 1) {
-            let nextNextWaypoint = waypoints[segmentIndex + 2];
-            dx = nextNextWaypoint[0] - nextWaypoint[0];
-            dy = nextNextWaypoint[1] - nextWaypoint[1];
-        }
-    }
-    
     if (dx !== 0 || dy !== 0) {
-        orientation = Math.atan2(dy, dx) - Math.PI / 2;
+        let length = Math.sqrt(dx * dx + dy * dy);
+        // Convert to perpendicular unit vector (rotate 90 degrees CCW)
+        currentSegmentVector = { x: -dy / length, y: dx / length };
     }
+    
+    // Next segment orientation vector
+    if (segmentIndex < nSegments - 1) {
+        let nextNextWaypoint = waypoints[segmentIndex + 2];
+        dx = nextNextWaypoint[0] - nextWaypoint[0];
+        dy = nextNextWaypoint[1] - nextWaypoint[1];
+        if (dx !== 0 || dy !== 0) {
+            let length = Math.sqrt(dx * dx + dy * dy);
+            // Convert to perpendicular unit vector (rotate 90 degrees CCW)
+            nextSegmentVector = { x: -dy / length, y: dx / length };
+        }
+    }
+    
+    // Choose orientation vector: prefer current, then previous, then next
+    let orientationVector = { x: 0, y: 1 };
+    if (currentSegmentVector !== null) {
+        orientationVector = currentSegmentVector;
+    } else if (previousSegmentVector !== null) {
+        orientationVector = previousSegmentVector;
+    } else if (nextSegmentVector !== null) {
+        orientationVector = nextSegmentVector;
+    }
+
+    // propagate orientation vectors to nulls:
+    if (previousSegmentVector === null) {
+        previousSegmentVector = orientationVector;
+    }
+    if (nextSegmentVector === null) {
+        nextSegmentVector = orientationVector;
+    }
+    if (currentSegmentVector === null) {
+        currentSegmentVector = orientationVector;
+    }
+
+    // orientation smoothing using vector interpolation
+    let finalOrientationVector;
+    if (segmentProgress < 0.5) {
+        currentOrientationWeight = segmentProgress * 2;
+        previousOrientationWeight = 1 - currentOrientationWeight;
+        nextOrientationWeight = 0;
+        
+        finalOrientationVector = {
+            x: previousSegmentVector.x * previousOrientationWeight + currentSegmentVector.x * currentOrientationWeight,
+            y: previousSegmentVector.y * previousOrientationWeight + currentSegmentVector.y * currentOrientationWeight
+        };
+    } else {
+        currentOrientationWeight = 1 - segmentProgress;
+        previousOrientationWeight = 0;
+        nextOrientationWeight = 1 - currentOrientationWeight;
+        
+        finalOrientationVector = {
+            x: currentSegmentVector.x * currentOrientationWeight + nextSegmentVector.x * nextOrientationWeight,
+            y: currentSegmentVector.y * currentOrientationWeight + nextSegmentVector.y * nextOrientationWeight
+        };
+    }
+    
+    // Normalize the final orientation vector
+    let vectorLength = Math.sqrt(finalOrientationVector.x * finalOrientationVector.x + finalOrientationVector.y * finalOrientationVector.y);
+    if (vectorLength > 0) {
+        finalOrientationVector.x /= vectorLength;
+        finalOrientationVector.y /= vectorLength;
+    }
+    
+    // Convert back to angle
+    let orientation = Math.atan2(finalOrientationVector.y, finalOrientationVector.x);
     
     position = new Position2D(
         previousWaypoint[0] + (nextWaypoint[0] - previousWaypoint[0]) * segmentProgress,
@@ -285,7 +440,258 @@ function getPositionFromWaypointsAtPhase(waypoints, phase){
         orientation,
     );
     return position;
+}
+getPositionFromWaypointsAtPhase = getPositionFromWaypointsAtPhase_laggingSmoothing;
 
+function getPositionFromWaypointsAtPhase_angleInterpolation(waypoints, phase){
+    if(waypoints.length === 1){
+        return new Position2D(waypoints[0][0], waypoints[0][1], 0);
+    }
+    nSegments = waypoints.length - 1;
+    segmentDuration = 1 / nSegments;    
+    segmentIndex = Math.floor(phase / segmentDuration);
+    segmentProgress = (phase % segmentDuration) / segmentDuration;
+    previousWaypoint = waypoints[segmentIndex];
+    nextWaypoint = waypoints[segmentIndex + 1];
+    
+    // Calculate orientation angles for different segments
+    let previousSegmentAngle = null;
+    let currentSegmentAngle = null;
+    let nextSegmentAngle = null;
+    
+    // Previous segment orientation angle
+    if (segmentIndex > 0) {
+        let prevPrevWaypoint = waypoints[segmentIndex - 1];
+        let dx = previousWaypoint[0] - prevPrevWaypoint[0];
+        let dy = previousWaypoint[1] - prevPrevWaypoint[1];
+        if (dx !== 0 || dy !== 0) {
+            // Calculate angle and rotate 90 degrees CCW (add π/2)
+            previousSegmentAngle = Math.atan2(dy, dx) + Math.PI / 2;
+        }
+    }
+    
+    // Current segment orientation angle
+    let dx = nextWaypoint[0] - previousWaypoint[0];
+    let dy = nextWaypoint[1] - previousWaypoint[1];
+    if (dx !== 0 || dy !== 0) {
+        // Calculate angle and rotate 90 degrees CCW (add π/2)
+        currentSegmentAngle = Math.atan2(dy, dx) + Math.PI / 2;
+    }
+    
+    // Next segment orientation angle
+    if (segmentIndex < nSegments - 1) {
+        let nextNextWaypoint = waypoints[segmentIndex + 2];
+        dx = nextNextWaypoint[0] - nextWaypoint[0];
+        dy = nextNextWaypoint[1] - nextWaypoint[1];
+        if (dx !== 0 || dy !== 0) {
+            // Calculate angle and rotate 90 degrees CCW (add π/2)
+            nextSegmentAngle = Math.atan2(dy, dx) + Math.PI / 2;
+        }
+    }
+    
+    // Choose orientation angle: prefer current, then previous, then next
+    let orientationAngle = Math.PI / 2; // Default to pointing up
+    if (currentSegmentAngle !== null) {
+        orientationAngle = currentSegmentAngle;
+    } else if (previousSegmentAngle !== null) {
+        orientationAngle = previousSegmentAngle;
+    } else if (nextSegmentAngle !== null) {
+        orientationAngle = nextSegmentAngle;
+    }
+
+    // propagate orientation angles to nulls:
+    if (previousSegmentAngle === null) {
+        previousSegmentAngle = orientationAngle;
+    }
+    if (nextSegmentAngle === null) {
+        nextSegmentAngle = orientationAngle;
+    }
+    if (currentSegmentAngle === null) {
+        currentSegmentAngle = orientationAngle;
+    }
+
+    // Linear interpolation function for angles
+    function interpolateAngles(angle1, angle2, t) {
+        // Normalize angles to [-π, π)
+        const normalizeAngle = (angle) => {
+            angle = angle % (2 * Math.PI);
+            if (angle > Math.PI) {
+                angle -= 2 * Math.PI;
+            } else if (angle < -Math.PI) {
+                angle += 2 * Math.PI;
+            }
+            return angle;
+        };
+        
+        angle1 = normalizeAngle(angle1);
+        angle2 = normalizeAngle(angle2);
+        
+        // Calculate the difference
+        let diff = angle2 - angle1;
+        
+        // Adjust to take the shortest arc
+        if (diff > Math.PI) {
+            diff -= 2 * Math.PI;
+        } else if (diff < -Math.PI) {
+            diff += 2 * Math.PI;
+        }
+        
+        // Interpolate through the shortest arc
+        return angle1 + diff * t;
+    }
+
+    // orientation smoothing using angle interpolation
+    let finalOrientation;
+    if (segmentProgress < 0.5) {
+        let t = segmentProgress * 2;
+        finalOrientation = interpolateAngles(previousSegmentAngle, currentSegmentAngle, t);
+    } else {
+        let t = (segmentProgress - 0.5) * 2;
+        finalOrientation = interpolateAngles(currentSegmentAngle, nextSegmentAngle, t);
+    }
+    
+    position = new Position2D(
+        previousWaypoint[0] + (nextWaypoint[0] - previousWaypoint[0]) * segmentProgress,
+        previousWaypoint[1] + (nextWaypoint[1] - previousWaypoint[1]) * segmentProgress,
+        finalOrientation,
+    );
+    return position;
+}
+
+/**
+ * Helper function to get the normalized direction vector of a segment.
+ * Returns the direction of travel (dx, dy).
+ * @param {Array<number>} w1 - Start waypoint [x, y]
+ * @param {Array<number>} w2 - End waypoint [x, y]
+ * @returns {{x: number, y: number} | null} - Normalized vector or null if length is zero.
+ */
+function getSegmentDirectionVector(w1, w2) {
+    const dx = w2[0] - w1[0];
+    const dy = w2[1] - w1[1];
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    if (length < 0.0001) {
+        return null; // Zero-length segment
+    }
+    return { x: dx / length, y: dy / length };
+}
+
+/**
+ * Helper function to normalize a vector, with a fallback.
+ * Used to average direction vectors at a waypoint.
+ * @param {number} x - Vector x component
+ * @param {number} y - Vector y component
+ * @param {{x: number, y: number}} fallback - Vector to return on a 180-degree turn (which sums to zero).
+ * @returns {{x: number, y: number}} - Normalized vector.
+ */
+function getNormalizedVector(x, y, fallback) {
+    const length = Math.sqrt(x * x + y * y);
+    if (length < 0.0001) {
+        // This happens on a 180-degree turn (e.g., v_prev + v_curr = 0).
+        // We fall back to the current segment's direction.
+        return fallback;
+    }
+    return { x: x / length, y: y / length };
+}
+
+/**
+ * Helper function to linearly interpolate between two angles, taking the shortest path.
+ * @param {number} a - Start angle (radians)
+ * @param {number} b - End angle (radians)
+ * @param {number} t - Interpolation factor (0.0 to 1.0)
+ * @returns {number} - Interpolated angle (radians)
+ */
+function lerpAngle_gemini(a, b, t) {
+    let delta = b - a;
+    if (delta > Math.PI) {
+        delta -= 2 * Math.PI; // Go the other way
+    } else if (delta < -Math.PI) {
+        delta += 2 * Math.PI; // Go the other way
+    }
+    return a + delta * t;
+}
+
+/**
+ * Calculates a Position2D (x, y, orientation) along a waypoint path at a given phase.
+ * Features smooth, continuous orientation (C1 continuity).
+ *
+ * @param {Array<Array<number>>} waypoints - An array of [x, y] coordinates.
+ * @param {number} phase - A value from 0.0 to 1.0 representing progress along the *entire* path.
+ * @returns {Position2D}
+ */
+function getPositionFromWaypointsAtPhase_gemini(waypoints, phase) {
+    if (!waypoints || waypoints.length === 0) {
+        return new Position2D(0, 0, 0); // Or handle error
+    }
+    
+    // Handle single waypoint case
+    if (waypoints.length === 1) {
+        return new Position2D(waypoints[0][0], waypoints[0][1], 0);
+    }
+
+    const nSegments = waypoints.length - 1;
+    const segmentDuration = 1 / nSegments;
+    
+    // Clamp phase to valid range
+    phase = Math.max(0, Math.min(1, phase));
+    
+    // Find current segment
+    // Handle the `phase = 1.0` edge case
+    let segmentIndex = Math.floor(phase / segmentDuration);
+    if (segmentIndex >= nSegments) {
+        segmentIndex = nSegments - 1;
+    }
+
+    let segmentProgress = (phase % segmentDuration) / segmentDuration;
+    // Handle `phase = 1.0` edge case where (1.0 % segmentDuration) might be 0
+    if (phase === 1.0) {
+        segmentProgress = 1.0;
+    }
+
+    const prevWaypoint = waypoints[segmentIndex];
+    const nextWaypoint = waypoints[segmentIndex + 1];
+
+    // --- 1. Calculate Position (Linear Interpolation) ---
+    const posX = prevWaypoint[0] + (nextWaypoint[0] - prevWaypoint[0]) * segmentProgress;
+    const posY = prevWaypoint[1] + (nextWaypoint[1] - prevWaypoint[1]) * segmentProgress;
+
+    // --- 2. Calculate Smooth Orientation ---
+
+    // Get direction vectors for the current, previous, and next segments
+    const v_curr_raw = getSegmentDirectionVector(prevWaypoint, nextWaypoint);
+
+    const v_prev_raw = (segmentIndex > 0)
+        ? getSegmentDirectionVector(waypoints[segmentIndex - 1], prevWaypoint)
+        : null;
+
+    const v_next_raw = (segmentIndex < nSegments - 1)
+        ? getSegmentDirectionVector(nextWaypoint, waypoints[segmentIndex + 2])
+        : null;
+
+    // Handle zero-length segments by falling back to an adjacent vector
+    // Default to {0, 1} (up) if all segments are zero-length
+    const v_curr = v_curr_raw || v_prev_raw || v_next_raw || { x: 0, y: 1 };
+    const v_prev = v_prev_raw || v_curr;
+    const v_next = v_next_raw || v_curr;
+
+    // Calculate the "ideal" orientation vector AT the waypoints by averaging
+    // the incoming and outgoing segment directions.
+    const O_start_vec = getNormalizedVector(v_prev.x + v_curr.x, v_prev.y + v_curr.y, v_curr);
+    const O_end_vec = getNormalizedVector(v_curr.x + v_next.x, v_curr.y + v_next.y, v_curr);
+
+    // Get the angles for the start and end of the segment
+    const startAngle = Math.atan2(O_start_vec.y, O_start_vec.x) + Math.PI / 2;
+    const endAngle = Math.atan2(O_end_vec.y, O_end_vec.x) + Math.PI / 2;
+
+    // Use a "smoothstep" function on segmentProgress for C1 continuity.
+    // This makes the rotation start and end slowly, matching the position's
+    // change in direction (which is 0 at the waypoint).
+    const t_smooth = segmentProgress * segmentProgress * (3 - 2 * segmentProgress);
+
+    // Interpolate the angle using the shortest path
+    const orientation = lerpAngle_gemini(startAngle, endAngle, t_smooth);
+
+    return new Position2D(posX, posY, orientation);
 }
 
 function drawCar(x, y, width, height, color, orientationRadiansCCW){
@@ -308,12 +714,12 @@ function drawCar(x, y, width, height, color, orientationRadiansCCW){
     
     // Draw windows
     context.fillStyle = 'lightblue';
-    context.fillRect(-width/2 + 2, height/2 - height/4 - height/3, width - 4, height/3);
+    context.fillRect(-width/2 + 2, -height/2 + height/4, width - 4, height/3);
     
     // Draw headlights (at the front of the car)
     context.fillStyle = 'yellow';
-    context.fillRect(-width/2, height/2, 8, 3);
-    context.fillRect(width/2 - 8, height/2, 8, 3);
+    context.fillRect(-width/2, -height/2 - 3, 8, 3);
+    context.fillRect(width/2 - 8, -height/2 - 3, 8, 3);
     context.restore();
 }
 
