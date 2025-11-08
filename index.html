@@ -13,13 +13,52 @@
             align-items: center;
             min-height: 100vh;
             background-color: #1a1a1a;
+            position: relative;
+        }
+        .container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         canvas {
             border: 1px solid #333;
         }
+        .text-content {
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            width: 400px;
+            max-width: 400px;
+            padding: 20px;
+            position: absolute;
+            left: calc(50% + 455px);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .text-content h1 {
+            color: #ffffff;
+            margin-top: 0;
+        }
+        .text-content a {
+            color: #4a9eff;
+            text-decoration: none;
+        }
+        .text-content a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="text-content">
+            <h1>Drive your car using your attention</h1>
+            <p><a href="https://github.com/rashchedrin/attentionDriver">Source on GitHub</a></p>
+            <p>Choose any car. Track it using your attention. At every intersection you have a choice to either track the car to move forward, or track it to turn right. This way you can drive your car from any place to any other place, using only your attention as the control.</p>
+            <p>This is my implementation of my philosophical view on how we can have free will in the multiverse, choose our future, yet have absolutely zero impact on anyone but ourselves.</p>
+            <p><a href="https://rashchedrin.github.io/">My other pages</a></p>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

@@ -8,7 +8,12 @@ const canvas = document.createElement('canvas');
 canvas.id = 'canvas';
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-document.body.appendChild(canvas);
+const container = document.querySelector('.container');
+if (container) {
+    container.appendChild(canvas);
+} else {
+    document.body.appendChild(canvas);
+}
 
 const context = canvas.getContext('2d');
 
