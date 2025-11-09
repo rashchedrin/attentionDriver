@@ -120,14 +120,14 @@ function drawCity(
             const lineOffset = 2; // Distance between the two parallel lines
             
             // Draw vertical street axis line (double)
-            if (column > 0) {
+            if (column > 0 || true) {
                 context.strokeStyle = axisLineColor;
                 context.lineWidth = 1;
                 
                 // First vertical line
                 context.beginPath();
-                context.moveTo(cellStartX - lineOffset, houseStartY);
-                context.lineTo(cellStartX - lineOffset, houseEndY);
+                context.moveTo(cellStartX - lineOffset + cellWidth, houseStartY);
+                context.lineTo(cellStartX - lineOffset + cellWidth, houseEndY);
                 context.stroke();
                 
                 // Second vertical line
@@ -138,14 +138,14 @@ function drawCity(
             }
             
             // Draw horizontal street axis line (double)
-            if (row > 0) {
+            if (row > 0 || true) {
                 context.strokeStyle = axisLineColor;
                 context.lineWidth = 1;
                 
                 // First horizontal line
                 context.beginPath();
-                context.moveTo(houseStartX, cellStartY - lineOffset);
-                context.lineTo(houseEndX, cellStartY - lineOffset);
+                context.moveTo(houseStartX, cellStartY - lineOffset + cellHeight);
+                context.lineTo(houseEndX, cellStartY - lineOffset + cellHeight);
                 context.stroke();
                 
                 // Second horizontal line
@@ -186,6 +186,8 @@ function drawCity(
             carUpY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carUpX, carUpY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carUpX, carUpY + cellHeight, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carUpX, carUpY - cellHeight, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
             //green goes down
             carPosition = getPositionFromWaypointsAtPhase([
@@ -196,6 +198,8 @@ function drawCity(
             carDownY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carDownX, carDownY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carDownX, carDownY + cellHeight, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carDownX, carDownY - cellHeight, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
             //green goes right
             verticalStreetMiddle = cellStartX + streetWidth / 4
@@ -207,6 +211,8 @@ function drawCity(
             carRightY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carRightX, carRightY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carRightX + cellWidth, carRightY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carRightX - cellWidth, carRightY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
             //green goes left
             verticalStreetMiddle = cellStartX + streetWidth / 4
@@ -218,7 +224,8 @@ function drawCity(
             carLeftY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carLeftX, carLeftY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
-
+            drawCar(carLeftX + cellWidth, carLeftY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carLeftX - cellWidth, carLeftY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
             //green goes up then right
             verticalStreetMiddle = cellStartX + streetWidth / 4
             carPosition = getPositionFromWaypointsAtPhase([
@@ -231,6 +238,9 @@ function drawCity(
             carY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carX, carY + cellHeight, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carX, carY - cellHeight, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+
 
             //green goes down then left
             verticalStreetMiddle = cellStartX + streetWidth / 4
@@ -244,6 +254,8 @@ function drawCity(
             carY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carX + cellWidth, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carX - cellWidth, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
 
             //green goes left then up
             verticalStreetMiddle = cellStartX + streetWidth / 4
@@ -257,7 +269,9 @@ function drawCity(
             carY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
-
+            drawCar(carX + cellWidth, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carX - cellWidth, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            
             //green goes right then down
             carPosition = getPositionFromWaypointsAtPhase([
                 [cellStartX + cellWidth / 2, horizontalStreetMiddle],
@@ -269,7 +283,8 @@ function drawCity(
             carY = wrapCellY(carPosition.y);
             carOrientationRadiansCCW = carPosition.orientationRadiansCCW;
             drawCar(carX, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
-
+            drawCar(carX + cellWidth, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
+            drawCar(carX - cellWidth, carY, carWidth, carHeight, carColor, carOrientationRadiansCCW)
             //green goes up then left
             allowLeftTurn = false;
             if(allowLeftTurn){
@@ -338,6 +353,19 @@ function getPositionFromWaypointsAtPhase_laggingSmoothing(waypoints, phase){
     currentPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, phase);
     previousPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, Math.max(0, phase - lag));
     angle = Math.atan2(currentPosition.y - previousPosition.y, currentPosition.x - previousPosition.x) + Math.PI / 2;
+    position = new Position2D(
+        currentPosition.x,
+        currentPosition.y,
+        angle,
+    );
+    return position;
+}
+function getPositionFromWaypointsAtPhase_oracleSmoothing(waypoints, phase){
+    lag = 0.15
+    currentPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, phase);
+    futurePosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, Math.min(1, phase + lag));
+    previousPosition = getPositionFromWaypointsAtPhase_noOrientation(waypoints, Math.max(0, phase - lag));
+    angle = Math.atan2(futurePosition.y - previousPosition.y, futurePosition.x - previousPosition.x) + Math.PI / 2;
     position = new Position2D(
         currentPosition.x,
         currentPosition.y,
@@ -849,74 +877,6 @@ function downloadGIF() {
     captureFrame();
 }
 
-/**
- * Generates and downloads an APNG of one full animation cycle.
- * 
- * side-effects: Creates an APNG file and triggers download.
- */
-function downloadAPNG() {
-    const APNG_FPS = 24;
-    const LOOP_DURATION_SECONDS = 4;
-    const TOTAL_FRAMES = APNG_FPS * LOOP_DURATION_SECONDS;
-    const FRAME_DELAY_MS = 1000 / APNG_FPS;
-    
-    const frames = [];
-    const delays = [];
-    let frameCount = 0;
-    
-    const button = document.getElementById('downloadApngButton');
-    
-    function captureFrame() {
-        const phase = frameCount / TOTAL_FRAMES;
-        draw((phase + 0.001) % 1);
-        
-        const imageData = context.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        frames.push(imageData.data.buffer);
-        delays.push(FRAME_DELAY_MS);
-        
-        frameCount++;
-        
-        if (button) {
-            button.textContent = 'Generating APNG... ' + Math.round((frameCount / TOTAL_FRAMES) * 100) + '%';
-        }
-        
-        if (frameCount < TOTAL_FRAMES) {
-            setTimeout(captureFrame, 0);
-        } else {
-            generateAPNG();
-        }
-    }
-    
-    function generateAPNG() {
-        if (button) {
-            button.textContent = 'Encoding APNG...';
-        }
-        
-        const apngData = UPNG.encode(frames, CANVAS_WIDTH, CANVAS_HEIGHT, 0, delays);
-        const blob = new Blob([apngData], { type: 'image/png' });
-        const url = URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'attention-driver-animation.apng';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        if (button) {
-            button.disabled = false;
-            button.textContent = 'Download APNG';
-        }
-    }
-    
-    if (button) {
-        button.disabled = true;
-        button.textContent = 'Generating APNG...';
-    }
-    
-    captureFrame();
-}
 
 // Call draw() at the specified frame rate (every 1000/FRAME_RATE ms)
 const interval_ms = 1000 / FRAME_RATE;

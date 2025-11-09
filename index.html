@@ -47,6 +47,28 @@
         .text-content a:hover {
             text-decoration: underline;
         }
+        .download-button {
+            background-color: #4a9eff;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .download-button:hover {
+            background-color: #3a8eef;
+        }
+        .download-button:active {
+            background-color: #2a7edf;
+        }
+        .download-button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -57,8 +79,18 @@
             <p>Choose any car. Track it using your attention. At every intersection you have a choice to either track the car to move forward, or track it to turn right. This way you can drive your car from any place to any other place, using only your attention as the control.</p>
             <p>This is my implementation of my philosophical view on how we can have free will in the multiverse, choose our future, yet have absolutely zero impact on anyone but ourselves.</p>
             <p><a href="https://rashchedrin.github.io/">My other pages</a></p>
+            <button class="download-button" id="downloadGifButton">Download GIF</button>
         </div>
     </div>
+    <script src="gif.js"></script>
     <script src="script.js"></script>
+    <script>
+        document.getElementById('downloadGifButton').addEventListener('click', function() {
+            const button = this;
+            button.disabled = true;
+            button.textContent = 'Generating GIF...';
+            downloadGIF();
+        });
+    </script>
 </body>
 </html>
